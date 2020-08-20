@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { SpotifyService } from '../../services/spotify.service';
+import { Observable } from 'rxjs';
 
 
 @Component({
@@ -15,23 +16,27 @@ export class HomeComponent implements OnInit {
   constructor(
     private spotifyService: SpotifyService
   ) { 
-    this.error=false;
-    this.loading =true;
-
-    this.spotifyService.getNewReleases().subscribe((data:any)=>{
-      
-      this.newSongs= data;
-      this.loading=false;
-    },(err:any)=>{
-      console.log("error component");
-      this.error=true;
-      this.loading=false;
-      this.errorMsg = err.error.error.message;
-    });
+    
   }
 
-  ngOnInit(): void {
+ async ngOnInit() {
+  this.error=false;
+  this.loading =true;
 
+  // await this.spotifyService.getNewReleases();
+  await this.spotifyService.getNewReleases().then((d:Observable<any>)=>{
+    console.log("COMOPONENT",d);
+    d.subscribe(data=>{
+          this.newSongs= data;
+    this.loading=false;
+    },(err:any)=>{
+          this.error=true;
+    this.loading=false;
+    this.errorMsg = err.error.error.message;
+    });
+  });
+
+  
   }
 
 }
